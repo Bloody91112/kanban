@@ -1,101 +1,99 @@
 <template>
-    <Head title="Dashboard"/>
-
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-        </template>
-
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <TaskBoard :project="project"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </AuthenticatedLayout>
+    <div class="flex flex-column gap-2" id="board">
+        <ul class="board-column"
+            v-for="column in columns"
+            :key="column.id"
+        >
+            <h3>{{ column.name }}</h3>
+            <li class="board-item"
+                v-for="task in column.tasks"
+                :key="task.id"
+            >
+                <p style="border: 1px solid black">{{ task.name }}</p>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head} from '@inertiajs/vue3';
-import Sortable from 'sortablejs/modular/sortable.complete.esm.js';
-import TaskBoard from "@/Components/TaskBoard.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import {Head} from "@inertiajs/vue3";
+import Sortable from "sortablejs/modular/sortable.complete.esm.js";
 
 export default {
-    components: {TaskBoard, AuthenticatedLayout, Head},
-    props: [
-        'project'
-    ],
+    name: "TaskBoard",
+    components: {AuthenticatedLayout, Head},
+    props: {
+        project: Object
+    },
     data() {
         return {
-            columns: [
-                {
-                    id: 1,
-                    name: "column_1",
-                    items: [
-                        {
-                            id: 1,
-                            name: "item1",
-                            color: "blue"
-                        },
-                        {
-                            id: 2,
-                            name: "item2",
-                            color: "red"
-                        },
-                        {
-                            id: 3,
-                            name: "item3",
-                            color: "purple"
-                        }
-                    ]
-                },
-                {
-                    id: 2,
-                    name: "column_2",
-                    items: [
-                        {
-                            id: 4,
-                            name: "item4",
-                            color: "blue"
-                        },
-                        {
-                            id: 5,
-                            name: "item5",
-                            color: "red"
-                        },
-                        {
-                            id: 6,
-                            name: "item6",
-                            color: "purple"
-                        }
-                    ]
-                },
-                {
-                    id: 3,
-                    name: "column_3",
-                    items: [
-                        {
-                            id: 7,
-                            name: "item7",
-                            color: "blue"
-                        },
-                        {
-                            id: 8,
-                            name: "item8",
-                            color: "red"
-                        },
-                        {
-                            id: 9,
-                            name: "item9",
-                            color: "purple"
-                        }
-                    ]
-                },
-            ],
+            columns: this.project.columns,
+            // columns: [
+            //     {
+            //         id: 1,
+            //         name: "column_1",
+            //         items: [
+            //             {
+            //                 id: 1,
+            //                 name: "item1",
+            //                 color: "blue"
+            //             },
+            //             {
+            //                 id: 2,
+            //                 name: "item2",
+            //                 color: "red"
+            //             },
+            //             {
+            //                 id: 3,
+            //                 name: "item3",
+            //                 color: "purple"
+            //             }
+            //         ]
+            //     },
+            //     {
+            //         id: 2,
+            //         name: "column_2",
+            //         items: [
+            //             {
+            //                 id: 4,
+            //                 name: "item4",
+            //                 color: "blue"
+            //             },
+            //             {
+            //                 id: 5,
+            //                 name: "item5",
+            //                 color: "red"
+            //             },
+            //             {
+            //                 id: 6,
+            //                 name: "item6",
+            //                 color: "purple"
+            //             }
+            //         ]
+            //     },
+            //     {
+            //         id: 3,
+            //         name: "column_3",
+            //         items: [
+            //             {
+            //                 id: 7,
+            //                 name: "item7",
+            //                 color: "blue"
+            //             },
+            //             {
+            //                 id: 8,
+            //                 name: "item8",
+            //                 color: "red"
+            //             },
+            //             {
+            //                 id: 9,
+            //                 name: "item9",
+            //                 color: "purple"
+            //             }
+            //         ]
+            //     },
+            // ],
             boardConfig: {
                 group: "name",  // or { name: "...", pull: [true, false, 'clone', array], put: [true, false, array] }
                 sort: true,  // sorting inside list
@@ -232,3 +230,7 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+
+</style>
