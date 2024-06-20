@@ -12,6 +12,8 @@ class Column extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public const EMPTY_COLUMN_NAME = 'Нераспределенное';
+
     public function tasks(): hasMany
     {
         return $this->hasMany(Task::class, 'column_id', 'id');

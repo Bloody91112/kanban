@@ -1,7 +1,7 @@
 <template>
     <div id="board">
         <div class="board-container">
-            <TransitionGroup name="list" tag="div" class="board-column" v-for="column in projectObject.columns"
+            <TransitionGroup name="list" tag="div" class="board-column" :data_column_id="column.id" v-for="column in projectObject.columns"
                              :key="column.id">
                 <div :key="column.id">
                     <h1 class="mb-4 text-2xl text-center font-extrabold text-gray-900 dark:text-white">
@@ -15,7 +15,7 @@
 
                             <template #content>
                                 <div class="block p-2">
-                                    <DangerButton @click="createColumn.isShow = false">Удалить</DangerButton>
+                                    <DangerButton @click="destroyColumn">Удалить</DangerButton>
                                 </div>
                             </template>
                         </Dropdown>
@@ -40,6 +40,7 @@ import TaskBoardElement from "@/Components/TaskBoardElement.vue";
 import DropdownLink from "@/Components/DropdownLink.vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import DangerButton from "@/Components/DangerButton.vue";
+import Swal from "sweetalert2";
 
 export default {
     name: "TaskBoard",
@@ -57,10 +58,39 @@ export default {
         }
     },
     mounted() {
-        let columns = document.querySelectorAll('.column-items');
-        columns.forEach((column) => {
-            new Sortable(column, this.config);
-        })
+        document
+            .querySelectorAll('.column-items')
+            .forEach((column) => {
+                new Sortable(column, this.config);
+            })
+    },
+    methods: {
+        destroyColumn(event){
+            Swal.fire({
+                title: "Удалить колонку? Задачи будут сохранены",
+                showDenyButton: true,
+                confirmButtonText: "Удалить",
+                denyButtonText: "Отмена"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire("Удалено", "", "success");
+
+                    let columnId = event.target.closest('.board-column').getAttribute('data_column_id')
+
+                    axios.delete(route('column.destroy', columnId))
+                        .then(res => {
+                            console.log(res.data.status)
+                            if (res.data.status){
+                                Swal.fire(res.data.message, "", "success");
+                                this.projectObject.columns = this.projectObject.columns.filter(col => col.id !== ++columnId)
+                            } else {
+                                Swal.fire(res.data.message, "", "info");
+                            }
+                        })
+
+                }
+            });
+        }
     }
 }
 </script>

@@ -18,8 +18,34 @@ class ColumnController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Колонка добавлена!',
+            'message' => 'Колонка успешно добавлена!',
             'column' => $column
         ]);
     }
+
+    public function destroy(Column $column): JsonResponse
+    {
+        if ($column->name === Column::EMPTY_COLUMN_NAME){
+            return response()->json([
+                'status' => false,
+                'message' => 'Нельзя удалить',
+            ]);
+        }
+
+        $emptyColumn = Column::firstOrCreate([
+            'name' => Column::EMPTY_COLUMN_NAME,
+            'project_id' => $column->project_id
+        ]);
+
+        $column->tasks()->update(['column_id' => $emptyColumn->id]);
+        $column->delete();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Колонка успешно удалена!',
+            'column' => $column
+        ]);
+
+    }
+
 }

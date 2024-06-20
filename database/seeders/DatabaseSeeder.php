@@ -69,6 +69,13 @@ class DatabaseSeeder extends Seeder
 
     private function createColumns(): void
     {
+        Project::each(function (Project $project){
+            Column::factory()->create([
+                'name' => Column::EMPTY_COLUMN_NAME,
+                'project_id' => $project->id
+            ]);
+        });
+
         Column::factory(150)->create();
     }
 

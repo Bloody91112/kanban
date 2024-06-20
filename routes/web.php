@@ -26,7 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('project', ProjectController::class)->only('show');
-    Route::resource('column', ColumnController::class)->only('store');
+    Route::resource('column', ColumnController::class)->only('store', 'destroy');
 
 });
 
