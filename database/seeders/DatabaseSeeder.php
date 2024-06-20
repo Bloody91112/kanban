@@ -58,7 +58,7 @@ class DatabaseSeeder extends Seeder
     private function createProjects(): void
     {
         Project::factory()->create(['name' => 'default_project']);
-        Project::factory(4)->create();
+        Project::factory(2)->create();
 
         Project::all()->each(function (Project $project) {
             Role::FULL_ACCESS_ROLES()->each(function (Role $role) use ($project) {
@@ -69,11 +69,11 @@ class DatabaseSeeder extends Seeder
 
     private function createColumns(): void
     {
-        Column::factory(50)->create();
+        Column::factory(150)->create();
     }
 
     private function createTasks(): void
     {
-        Task::factory(100)->create();
+        Task::factory(500)->create();
     }
 }

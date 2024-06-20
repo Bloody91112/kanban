@@ -10,7 +10,28 @@
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <TaskBoard :project="project"/>
+
+                        <div class="relative flex flex-col text-gray-700 bg-white shadow-md w-96 rounded-xl bg-clip-border">
+                            <nav class="flex min-w-[240px] flex-col gap-1 p-2 font-sans text-base font-normal text-blue-gray-700">
+                                <Link :href="route('project.show', project.id)" v-for="project in projects"
+                                     class="hover:bg-gray-100 flex items-center w-full p-3 leading-tight transition-all rounded-lg outline-none text-start">
+                                    <div class="grid mr-4 place-items-center">
+                                        <img alt="candice" src="https://docs.material-tailwind.com/img/face-1.jpg"
+                                             class="relative inline-block h-12 w-12 !rounded-full  object-cover object-center" />
+                                    </div>
+                                    <div>
+                                        <h6 class="block font-sans text-base antialiased font-semibold leading-relaxed tracking-normal text-blue-gray-900">
+                                            {{ project.name }}
+                                        </h6>
+                                        <p class="block font-sans text-sm antialiased font-normal leading-normal text-gray-700">
+                                            Software Engineer @ Material Tailwind
+                                        </p>
+                                    </div>
+                                </Link>
+                            </nav>
+                        </div>
+
+                        <!--                        <TaskBoard :project="project"/>-->
                     </div>
                 </div>
             </div>
@@ -20,14 +41,14 @@
 
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {Head} from '@inertiajs/vue3';
+import {Head, Link} from '@inertiajs/vue3';
 import Sortable from 'sortablejs/modular/sortable.complete.esm.js';
 import TaskBoard from "@/Components/TaskBoard.vue";
 
 export default {
-    components: {TaskBoard, AuthenticatedLayout, Head},
+    components: {TaskBoard, AuthenticatedLayout, Head, Link},
     props: [
-        'project'
+        'projects'
     ],
     data() {
         return {

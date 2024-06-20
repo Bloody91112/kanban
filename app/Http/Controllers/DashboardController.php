@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Project;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -10,9 +9,8 @@ class DashboardController
 {
     public function index(): Response
     {
-        $project = Project::where('id', '=', 1)->with('columns.tasks')->first();
-        return Inertia::render('Dashboard', [
-            'project' => $project
-        ]);
+        $projects = auth()->user()->projects()->with('columns.tasks')->get();
+
+        return Inertia::render('Dashboard', compact('projects'));
     }
 }
