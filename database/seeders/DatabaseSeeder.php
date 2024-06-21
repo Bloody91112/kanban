@@ -71,7 +71,7 @@ class DatabaseSeeder extends Seeder
     {
         Project::each(function (Project $project){
             Column::factory()->create([
-                'name' => Column::EMPTY_COLUMN_NAME,
+                'name' => Column::BACKLOG_COLUMN,
                 'project_id' => $project->id
             ]);
         });
@@ -82,5 +82,10 @@ class DatabaseSeeder extends Seeder
     private function createTasks(): void
     {
         Task::factory(500)->create();
+        Column::each(function (Column $column){
+            $column->tasks->each(function (Task $task, int $key) {
+                return $task->update(['position' => $key]);
+            });
+        });
     }
 }

@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Column;
 use App\Models\Project;
+use App\Models\Task;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;

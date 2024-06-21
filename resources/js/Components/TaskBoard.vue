@@ -22,7 +22,7 @@
 
                     </h1>
                     <div class="column-items">
-                        <TaskBoardElement v-for="task in column.tasks" :task="task" :key="task.id"/>
+                        <TaskBoardElement :draggable="!this.config.disabled" :data_task_id="task.id" v-for="task in column.tasks" :task="task" :key="task.id"/>
                     </div>
                 </div>
 
@@ -54,14 +54,18 @@ export default {
             config: {
                 group: "name",
                 animation: 150,
-            }
+                disabled: false,
+                onAdd: (event) => this.sortTasks(event),
+            },
+            sortables: []
         }
     },
     mounted() {
         document
             .querySelectorAll('.column-items')
             .forEach((column) => {
-                new Sortable(column, this.config);
+                let item = new Sortable(column, this.config);
+                this.sortables = [...this.sortables, item]
             })
     },
     methods: {
@@ -73,23 +77,48 @@ export default {
                 denyButtonText: "Отмена"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire("Удалено", "", "success");
 
                     let columnId = event.target.closest('.board-column').getAttribute('data_column_id')
 
                     axios.delete(route('column.destroy', columnId))
                         .then(res => {
-                            console.log(res.data.status)
                             if (res.data.status){
                                 Swal.fire(res.data.message, "", "success");
-                                this.projectObject.columns = this.projectObject.columns.filter(col => col.id !== ++columnId)
+                                this.projectObject = res.data.project
                             } else {
                                 Swal.fire(res.data.message, "", "info");
                             }
                         })
-
                 }
             });
+        },
+        sortTasks(event){
+            this.sortables.forEach((item) => item.option('disabled', true))
+
+            let itemID = event.item.getAttribute('data_task_id')
+
+            axios.post(route('task.move', itemID), {
+                oldIndex: event.oldIndex,
+                newIndex: event.newIndex,
+                oldColumnId: Number(event.from.closest('.board-column').getAttribute('data_column_id')),
+                newColumnId: Number(event.to.closest('.board-column').getAttribute('data_column_id')),
+            }).then(res => {
+                if (res.data.status){
+                    this.projectObject = res.data.project
+                }
+            }).finally(() => {
+                this.sortables.forEach((item) => item.option('disabled', false))
+            })
+        },
+    },
+
+
+
+    watch: {
+        project: {
+            handler(newValue, oldValue) {
+                this.projectObject = newValue
+            },
         }
     }
 }

@@ -38,7 +38,6 @@
                         </div>
                     </div>
                 </Modal>
-
             </div>
         </template>
 
@@ -100,7 +99,7 @@ export default {
         }
     },
     mounted() {
-        console.log(this.projectObject.columns)
+        //console.log(this.projectObject.columns)
     },
     methods: {
         addColumn() {
@@ -112,7 +111,7 @@ export default {
                     if (res.data.status) {
                         Swal.fire(res.data.message)
                         this.createColumn.isShow = false
-                        this.projectObject.columns = [...this.projectObject.columns, res.data.column]
+                        this.projectObject = res.data.project
                     }
                 })
                 .catch(err => {

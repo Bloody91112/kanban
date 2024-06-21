@@ -3,48 +3,43 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Column\StoreRequest;
+use App\Http\Services\ColumnService;
+use App\Http\Services\ProjectService;
 use App\Models\Column;
-use App\Models\Project;
 use Illuminate\Http\JsonResponse;
-use Inertia\Inertia;
-use Inertia\Response;
 
 class ColumnController extends Controller
 {
+    public function __construct(
+        public ColumnService $service,
+    ) {}
+
     public function store(StoreRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $column = Column::create($data);
+        $column = $this->service->store($data);
+        $project = ProjectService::load($column->project);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Колонка успешно добавлена!',
-            'column' => $column
-        ]);
+        return response()->json(
+            ['status' => true, 'message' => 'Колонка успешно добавлена!', 'project' => $project]
+        );
     }
 
     public function destroy(Column $column): JsonResponse
     {
-        if ($column->name === Column::EMPTY_COLUMN_NAME){
-            return response()->json([
-                'status' => false,
-                'message' => 'Нельзя удалить',
-            ]);
+        if ($column->name === Column::BACKLOG_COLUMN){
+            return response()->json(
+                ['status' => false, 'message' => 'Нельзя удалить']
+            );
         }
 
-        $emptyColumn = Column::firstOrCreate([
-            'name' => Column::EMPTY_COLUMN_NAME,
-            'project_id' => $column->project_id
-        ]);
+        $this->service->destroy($column);
 
-        $column->tasks()->update(['column_id' => $emptyColumn->id]);
-        $column->delete();
+        $project = ProjectService::load($column->project);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Колонка успешно удалена!',
-            'column' => $column
-        ]);
+        return response()->json(
+            ['status' => true, 'message' => 'Колонка успешно удалена!', 'project' => $project]
+        );
 
     }
 

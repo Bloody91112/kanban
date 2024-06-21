@@ -12,11 +12,11 @@ class Column extends Model
     use HasFactory;
     protected $guarded = [];
 
-    public const EMPTY_COLUMN_NAME = 'Нераспределенное';
+    public const BACKLOG_COLUMN = 'Бэклог';
 
     public function tasks(): hasMany
     {
-        return $this->hasMany(Task::class, 'column_id', 'id');
+        return $this->hasMany(Task::class, 'column_id', 'id')->orderBy('position');
     }
 
     public function project(): belongsTo

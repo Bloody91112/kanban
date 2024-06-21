@@ -4,6 +4,7 @@ use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('project', ProjectController::class)->only('show');
     Route::resource('column', ColumnController::class)->only('store', 'destroy');
+
+    Route::post('task/{task}/move', [TaskController::class, 'move'])->name('task.move');
 
 });
 
