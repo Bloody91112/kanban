@@ -8,28 +8,59 @@ use App\Models\Task;
 
 class TaskService
 {
+    public function store(array $data): Task
+    {
+        $task = Task::create($data);
+        $task->update([
+            'position' => $task->column->tasks()->count()
+                ? $task->column->tasks()->max('position') + 1
+                : 0
+        ]);
+        return $task;
+    }
+
     public function move(Task $task, array $data): Task
     {
-        /* Таски из старой колонки */
-        Task::where('column_id', '=', $data['oldColumnId'])
-            ->where('position', '>', $data['oldIndex'])
+        /* Сортировка в пределах одной колонки */
+        if ($data['oldColumnId'] === $data['newColumnId']){
+            Task::where('column_id', '=', $data['newColumnId'])
+                ->where('position', '=', $data['newIndex'])
+                ->first()
+                ->update(['position' => $data['oldIndex']]);
+            $task->update(['position' => $data['newIndex']]);
+        /* Перемещение между колонками */
+        } else {
+            /* Таски из старой колонки */
+            Task::where('column_id', '=', $data['oldColumnId'])
+                ->where('position', '>', $data['oldIndex'])
+                ->get()
+                ->filter(fn(Task $item) => $item->id != $task->id)
+                ->each(fn (Task $item) => $item->update(['position' => $item->position - 1]));
+
+            /* Таски из новой колонки */
+            Task::where('column_id', '=', $data['newColumnId'])
+                ->where('position', '>=', $data['newIndex'])
+                ->get()
+                ->filter(fn(Task $item) => $item->id != $task->id)
+                ->each(fn (Task $item) => $item->update(['position' => $item->position + 1]));
+
+            $task->update([
+                'column_id' => $data['newColumnId'],
+                'position' => $data['newIndex']
+            ]);
+        }
+
+        return $task;
+    }
+
+    public function destroy(Task $task): void
+    {
+        Task::where('column_id', '=', $task->column_id)
+            ->where('position', '>', $task->position)
             ->get()
             ->filter(fn(Task $item) => $item->id != $task->id)
             ->each(fn (Task $item) => $item->update(['position' => $item->position - 1]));
 
-        /* Таски из новой колонки */
-        Task::where('column_id', '=', $data['newColumnId'])
-            ->where('position', '>=', $data['newIndex'])
-            ->get()
-            ->filter(fn(Task $item) => $item->id != $task->id)
-            ->each(fn (Task $item) => $item->update(['position' => $item->position + 1]));
-
-        $task->update([
-            'column_id' => $data['newColumnId'],
-            'position' => $data['newIndex']
-        ]);
-
-        return $task;
-
+        $task->delete();
     }
 }

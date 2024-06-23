@@ -4,52 +4,98 @@
     <AuthenticatedLayout>
         <template #header>
             <div class="flex gap-4">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ projectObject.name }}</h2>
+                <Dropdown>
+                    <template #trigger>
+                        <h2 class="font-semibold text-xl text-gray-800 leading-tight cursor-pointer">
+                            {{ projectObject.name }}
+                        </h2>
+                    </template>
 
-                <SecondaryButton @click="createColumn.isShow = true"> Новая колонка</SecondaryButton>
-
-                <Modal :show="createColumn.isShow" @close="createColumn.isShow = false">
-                    <div class="p-6">
-                        <div>
-                            <InputLabel for="name" value="Название"/>
-
-                            <TextInput
-                                id="name"
-                                type="text"
-                                style="width: 300px"
-                                class="mt-1 block"
-                                v-model="createColumn.form.name"
-                                required
-                                autofocus
-                                autocomplete="name"
-                            />
-
-                            <InputError class="mt-2" :message="createColumn.errors?.name"/>
+                    <template #content>
+                        <div class="flex flex-col gap-1 align-center justify-center p-2">
+                            <PrimaryButton @click="newColumn.isShow = true">+ колонка</PrimaryButton>
+                            <PrimaryButton @click="newTask.isShow = true">+ задача</PrimaryButton>
                         </div>
-
-
-                        <div class="mt-6 flex justify-start">
-                            <PrimaryButton @click="addColumn" :class="{ 'opacity-25': createColumn.processing }"
-                                           :disabled="createColumn.processing">
-                                Добавить
-                            </PrimaryButton>
-
-                            <DangerButton class="ms-3" @click="createColumn.isShow = false"> Отмена</DangerButton>
-                        </div>
-                    </div>
-                </Modal>
+                    </template>
+                </Dropdown>
             </div>
         </template>
 
         <div class="py-2">
             <div class="mx-auto sm:px-2 lg:px-4">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg flex">
-                    <div class="board-container">
+                    <div class="page-container">
                         <TaskBoard :project="projectObject"/>
                     </div>
                 </div>
             </div>
         </div>
+
+        <Modal :show="newColumn.isShow" @close="newColumn.isShow = false">
+            <div class="p-6">
+                <div>
+                    <InputLabel for="name" value="Название"/>
+
+                    <TextInput
+                        id="name"
+                        type="text"
+                        style="width: 300px"
+                        class="mt-1 block"
+                        v-model="newColumn.form.name"
+                        required
+                        autofocus
+                    />
+
+                    <InputError class="mt-2" :message="newColumn.errors?.name"/>
+                </div>
+
+
+                <div class="mt-6 flex justify-start">
+                    <PrimaryButton @click="addColumn" :class="{ 'opacity-25': newColumn.processing }"
+                                   :disabled="newColumn.processing">
+                        Добавить
+                    </PrimaryButton>
+
+                    <DangerButton class="ms-3" @click="newColumn.isShow = false"> Отмена</DangerButton>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal :show="newTask.isShow" @close="newTask.isShow = false">
+            <div class="p-6">
+                <div>
+                    <InputLabel for="name" value="Название"/>
+
+                    <TextInput
+                        id="name"
+                        type="text"
+                        style="width: 300px"
+                        class="mt-1 block"
+                        v-model="newTask.form.name"
+                        required
+                        autofocus
+                    />
+
+                    <InputError class="mt-2" :message="newTask.errors?.name"/>
+                </div>
+
+                <Select label="Колонка"
+                        @select="(value) => newTask.form.column_id = value"
+                        :error="newTask.errors?.column_id"
+                        :options="columnsOptions"
+                        style="width: 300px"
+                        name="column_id"/>
+
+                <div class="mt-6 flex justify-start">
+                    <PrimaryButton @click="addTask" :class="{ 'opacity-25': newTask.processing }"
+                                   :disabled="newTask.processing">
+                        Добавить
+                    </PrimaryButton>
+
+                    <DangerButton class="ms-3" @click="newTask.isShow = false"> Отмена</DangerButton>
+                </div>
+            </div>
+        </Modal>
 
     </AuthenticatedLayout>
 </template>
@@ -66,11 +112,15 @@ import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Swal from 'sweetalert2'
+import Dropdown from "@/Components/Dropdown.vue";
+import Select from "@/Components/Select.vue";
 
 
 export default {
     name: "Show",
     components: {
+        Select,
+        Dropdown,
         PrimaryButton,
         Modal,
         TextInput,
@@ -80,14 +130,14 @@ export default {
         InputError,
         Head, TaskBoard, Link, AuthenticatedLayout
     },
-    props: [
-        'project',
-    ],
+    props: {
+        project: Object,
+    },
 
     data() {
         return {
             projectObject: this.project,
-            createColumn: {
+            newColumn: {
                 isShow: false,
                 form: {
                     name: '',
@@ -96,32 +146,67 @@ export default {
                 processing: false,
                 errors: {}
             },
+            newTask: {
+                isShow: false,
+                form: {
+                    name: '',
+                    column_id: null
+                },
+                processing: false,
+                errors: {}
+            }
         }
     },
-    mounted() {
-        //console.log(this.projectObject.columns)
+    computed: {
+        columnsOptions(){
+            return this.projectObject.columns.map((column) => {
+                return { value: column.id, name: column.name }
+            })
+        }
     },
     methods: {
         addColumn() {
-            this.createColumn.errors = {};
-            this.createColumn.processing = true
+            this.newColumn.errors = {};
+            this.newColumn.processing = true
 
-            axios.post(route('column.store'), this.createColumn.form)
+            axios.post(route('column.store'), this.newColumn.form)
                 .then(res => {
                     if (res.data.status) {
                         Swal.fire(res.data.message)
-                        this.createColumn.isShow = false
+                        this.newColumn.isShow = false
                         this.projectObject = res.data.project
                     }
                 })
                 .catch(err => {
                     let errors = err.response.data.errors
                     for (const errKey in errors) {
-                        this.createColumn.errors[errKey] = errors[errKey][0]
+                        this.newColumn.errors[errKey] = errors[errKey][0]
                     }
                 })
                 .finally(() => {
-                    this.createColumn.processing = false
+                    this.newColumn.processing = false
+                })
+        },
+        addTask() {
+            this.newTask.errors = {};
+            this.newTask.processing = true
+
+            axios.post(route('task.store'), this.newTask.form)
+                .then(res => {
+                    if (res.data.status) {
+                        Swal.fire(res.data.message)
+                        this.newTask.isShow = false
+                        this.projectObject = res.data.project
+                    }
+                })
+                .catch(err => {
+                    let errors = err.response.data.errors
+                    for (const errKey in errors) {
+                        this.newTask.errors[errKey] = errors[errKey][0]
+                    }
+                })
+                .finally(() => {
+                    this.newTask.processing = false
                 })
         }
     }
@@ -129,12 +214,13 @@ export default {
 </script>
 
 <style scoped>
-.board-container {
+.page-container {
     padding: 20px;
     color: gray;
     font-weight: bold;
     overflow-x: auto;
     max-height: 75vh;
+    flex: 1 1 100vh;
 }
 
 </style>

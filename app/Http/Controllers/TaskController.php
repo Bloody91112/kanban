@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Task\MoveRequest;
+use App\Http\Requests\Task\StoreRequest;
 use App\Http\Services\ProjectService;
 use App\Http\Services\TaskService;
 use App\Models\Project;
@@ -23,6 +24,30 @@ class TaskController extends Controller
         $project = ProjectService::load($task->column->project);
         return response()->json([
             'status' => true,
+            'project' => $project
+        ]);
+    }
+
+    public function store(StoreRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $task = $this->service->store($data);
+        $project = ProjectService::load($task->column->project);
+        return response()->json([
+            'status' => true,
+            'project' => $project,
+            'message' => 'Задача успешно создана!'
+        ]);
+    }
+
+    public function destroy(Task $task): JsonResponse
+    {
+        $this->service->destroy($task);
+        $project = ProjectService::load($task->column->project);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Задача успешно удалена!',
             'project' => $project
         ]);
     }

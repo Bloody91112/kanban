@@ -8,6 +8,6 @@ class ProjectService
 {
     public static function load(Project $project): Project
     {
-       return $project->load('columns.tasks');
+       return $project->refresh()->load('columns.tasks', 'users');
     }
 }

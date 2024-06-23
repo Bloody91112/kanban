@@ -27,9 +27,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('project', ProjectController::class)->only('show');
+
+    Route::post('column/swap', [ColumnController::class, 'swap'])->name('column.swap');
     Route::resource('column', ColumnController::class)->only('store', 'destroy');
 
     Route::post('task/{task}/move', [TaskController::class, 'move'])->name('task.move');
+    Route::resource('task', TaskController::class)->only('store', 'destroy');
 
 });
 

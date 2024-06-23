@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Column\StoreRequest;
+use App\Http\Requests\Column\SwapRequest;
 use App\Http\Services\ColumnService;
 use App\Http\Services\ProjectService;
 use App\Models\Column;
@@ -20,27 +21,44 @@ class ColumnController extends Controller
         $column = $this->service->store($data);
         $project = ProjectService::load($column->project);
 
-        return response()->json(
-            ['status' => true, 'message' => 'Колонка успешно добавлена!', 'project' => $project]
-        );
+        return response()->json([
+            'status' => true,
+            'message' => 'Колонка успешно добавлена!',
+            'project' => $project
+        ]);
     }
 
     public function destroy(Column $column): JsonResponse
     {
         if ($column->name === Column::BACKLOG_COLUMN){
-            return response()->json(
-                ['status' => false, 'message' => 'Нельзя удалить']
-            );
+            return response()->json([
+                'status' => false,
+                'message' => 'Нельзя удалить'
+            ]);
         }
 
         $this->service->destroy($column);
 
         $project = ProjectService::load($column->project);
 
-        return response()->json(
-            ['status' => true, 'message' => 'Колонка успешно удалена!', 'project' => $project]
-        );
+        return response()->json([
+            'status' => true,
+            'message' => 'Колонка успешно удалена!',
+            'project' => $project
+        ]);
+    }
 
+    public function swap(SwapRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $this->service->swap($data);
+        $project = ProjectService::load(Column::find($data['firstColumnId'])->project);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Колонка успешно удалена!',
+            'project' => $project
+        ]);
     }
 
 }

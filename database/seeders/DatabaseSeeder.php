@@ -76,16 +76,22 @@ class DatabaseSeeder extends Seeder
             ]);
         });
 
-        Column::factory(150)->create();
+        Column::factory(10)->create();
     }
 
     private function createTasks(): void
     {
-        Task::factory(500)->create();
-        Column::each(function (Column $column){
-            $column->tasks->each(function (Task $task, int $key) {
-                return $task->update(['position' => $key]);
+        Task::factory(50)->create();
+
+        Project::each(function (Project $project, int $key){
+            $project->columns->each(function (Column $column, int $columnKey) {
+                $column->update(['position' => $columnKey]);
+                $column->tasks->each(function (Task $task, int $taskKey) {
+                    return $task->update(['position' => $taskKey]);
+                });
             });
         });
+
+
     }
 }
