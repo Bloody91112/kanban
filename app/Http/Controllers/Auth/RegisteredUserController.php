@@ -40,6 +40,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'color' => User::COLORS[array_rand(User::COLORS)]
         ]);
 
         event(new Registered($user));

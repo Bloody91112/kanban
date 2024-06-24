@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Image;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -59,5 +62,25 @@ class ProfileController extends Controller
         $request->session()->regenerateToken();
 
         return Redirect::to('/');
+    }
+
+    public function uploadImage(Request $request): RedirectResponse
+    {
+        $data = $request->validate(['image' => ['required', 'file']]);
+        $user = auth()->user();
+        $path = Storage::put("public/users/$user->id", $data['image']);
+
+        if ($user->image){
+            Storage::delete($user->image->path);
+            $user->image->delete();
+        }
+
+        Image::create([
+            'imageable_id' => $user->id,
+            'imageable_type' => User::class,
+            'path' => $path
+        ]);
+
+        return Redirect::route('profile.edit');
     }
 }

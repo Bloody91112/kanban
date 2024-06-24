@@ -3,7 +3,7 @@
 
     <AuthenticatedLayout>
         <template #header>
-            <div class="flex gap-4">
+            <div class="flex gap-4 items-center">
                 <Dropdown>
                     <template #trigger>
                         <h2 class="font-semibold text-xl text-gray-800 leading-tight cursor-pointer">
@@ -18,6 +18,10 @@
                         </div>
                     </template>
                 </Dropdown>
+
+                <div class="flex gap-2 p-1">
+                    <UserLogo size="35" v-for="user in project.users" :user="user"/>
+                </div>
             </div>
         </template>
 
@@ -114,11 +118,13 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import Swal from 'sweetalert2'
 import Dropdown from "@/Components/Dropdown.vue";
 import Select from "@/Components/Select.vue";
+import UserLogo from "@/Components/UserLogo.vue";
 
 
 export default {
     name: "Show",
     components: {
+        UserLogo,
         Select,
         Dropdown,
         PrimaryButton,
@@ -209,7 +215,7 @@ export default {
                     this.newTask.processing = false
                 })
         }
-    }
+    },
 }
 </script>
 
