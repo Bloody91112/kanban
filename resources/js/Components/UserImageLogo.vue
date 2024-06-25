@@ -1,6 +1,7 @@
 <template>
     <div v-if="user.image">
         <img
+            class="cursor-pointer"
             :style="{
                 borderRadius: rounded ? '100px' : '0',
                 width: size ? size + 'px' : '25px',

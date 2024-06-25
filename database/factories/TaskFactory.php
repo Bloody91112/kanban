@@ -22,12 +22,17 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        $column = Column::inRandomOrder()->first();
+        $user = $column->project->users->random();
+
         return [
             'name' => fake()->name(),
             'description' => fake()->text(),
-            'column_id' => Column::inRandomOrder()->first()->id,
+            'column_id' => $column->id,
+            'user_id' => $user->id,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
+            'deadline' => Carbon::now()->addDays(rand(1,10))
         ];
     }
 }

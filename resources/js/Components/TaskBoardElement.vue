@@ -16,6 +16,13 @@
                     </template>
                 </Dropdown>
             </a>
+            <div class="mb-3 flex gap-2 items-center">
+                <UserLogo v-if="task.user" :user="task.user" :size="25"/>
+                <p v-if="task.deadline_time_left" class="text-sm">
+                    {{task.deadline_time_left}}
+                </p>
+            </div>
+
             <a href="#"
                class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 Read more
@@ -32,10 +39,11 @@
 <script>
 import DangerButton from "@/Components/DangerButton.vue";
 import Dropdown from "@/Components/Dropdown.vue";
+import UserLogo from "@/Components/UserLogo.vue";
 
 export default {
     name: "TaskBoardElement",
-    components: {Dropdown, DangerButton},
+    components: {UserLogo, Dropdown, DangerButton},
     props: {
         task: Object,
     },

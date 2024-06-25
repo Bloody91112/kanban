@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->foreignId('column_id')->index()->constrained('columns');
+            $table->foreignId('user_id')->nullable()->index()->constrained('users');
             $table->integer('position')->nullable();
+            $table->dateTime('deadline')->nullable();
             $table->timestamps();
         });
     }

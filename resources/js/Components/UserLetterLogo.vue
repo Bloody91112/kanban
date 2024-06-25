@@ -1,5 +1,5 @@
 <template>
-    <div class="text-center cursor-pointer hover:bg-sky-700"
+    <div class="text-center cursor-pointer"
          :style="{
                 lineHeight: size ? size + 'px' : '25px',
                 width: size ? size + 'px' : '25px',
