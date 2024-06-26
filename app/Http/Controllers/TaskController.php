@@ -9,6 +9,7 @@ use App\Http\Services\TaskService;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -49,6 +50,18 @@ class TaskController extends Controller
             'status' => true,
             'message' => 'Задача успешно удалена!',
             'project' => $project
+        ]);
+    }
+
+    public function addFile(Task $task, Request $request): JsonResponse
+    {
+        $data = $request->validate(['image' => 'file']);
+        $this->service->addFile($task, $data);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Файл успешно добавлен!',
+            'project' => $task->refresh()
         ]);
     }
 }

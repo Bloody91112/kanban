@@ -33,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('column', ColumnController::class)->only('store', 'destroy');
 
     Route::post('task/{task}/move', [TaskController::class, 'move'])->name('task.move');
+    Route::post('task/{task}/addFile', [TaskController::class, 'addFile'])->name('task.addFile');
+
     Route::resource('task', TaskController::class)->only('store', 'destroy');
 
 });
