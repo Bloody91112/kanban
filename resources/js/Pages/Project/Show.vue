@@ -80,6 +80,24 @@
                         autofocus
                     />
 
+                    <InputLabel for="description" value="Описание"/>
+                    <Textarea
+                        id="description"
+                        style="width: 300px"
+                        class="mt-1 block"
+                        v-model="newTask.form.description"
+                        required
+                    />
+
+                    <InputLabel for="deadline" value="Дедлайн"/>
+                    <DateInput
+                        id="deadline"
+                        style="width: 300px"
+                        class="mt-1 block"
+                        v-model="newTask.form.deadline"
+                        required
+                    />
+
                     <InputError class="mt-2" :message="newTask.errors?.name"/>
                 </div>
 
@@ -89,6 +107,13 @@
                         :options="columnsOptions"
                         style="width: 300px"
                         name="column_id"/>
+
+                <Select label="Ответственный"
+                        @select="(value) => newTask.form.user_id = value"
+                        :error="newTask.errors?.user_id"
+                        :options="usersOptions"
+                        style="width: 300px"
+                        name="user_id"/>
 
                 <div class="mt-6 flex justify-start">
                     <PrimaryButton @click="addTask" :class="{ 'opacity-25': newTask.processing }"
@@ -119,11 +144,15 @@ import Swal from 'sweetalert2'
 import Dropdown from "@/Components/Dropdown.vue";
 import Select from "@/Components/Select.vue";
 import UserLogo from "@/Components/UserLogo.vue";
+import Textarea from "@/Components/Textarea.vue";
+import DateInput from "@/Components/DateInput.vue";
 
 
 export default {
     name: "Show",
     components: {
+        DateInput,
+        Textarea,
         UserLogo,
         Select,
         Dropdown,
@@ -156,7 +185,10 @@ export default {
                 isShow: false,
                 form: {
                     name: '',
-                    column_id: null
+                    description: '',
+                    deadline: '',
+                    column_id: null,
+                    user_id: null
                 },
                 processing: false,
                 errors: {}
@@ -167,6 +199,11 @@ export default {
         columnsOptions(){
             return this.projectObject.columns.map((column) => {
                 return { value: column.id, name: column.name }
+            })
+        },
+        usersOptions(){
+            return this.projectObject.users.map((user) => {
+                return { value: user.id, name: user.name }
             })
         }
     },

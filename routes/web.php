@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ColumnController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
@@ -33,9 +34,11 @@ Route::middleware('auth')->group(function () {
     Route::resource('column', ColumnController::class)->only('store', 'destroy');
 
     Route::post('task/{task}/move', [TaskController::class, 'move'])->name('task.move');
-    Route::post('task/{task}/addFile', [TaskController::class, 'addFile'])->name('task.addFile');
 
     Route::resource('task', TaskController::class)->only('store', 'destroy');
+
+    Route::post('/image', [ImageController::class, 'store'])->name('image.store');
+    Route::delete('/image/{image}', [ImageController::class, 'destroy'])->name('image.destroy');
 
 });
 

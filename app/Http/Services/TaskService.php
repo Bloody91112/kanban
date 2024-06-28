@@ -66,14 +66,4 @@ class TaskService
         $task->delete();
     }
 
-    public function addFile(Task $task, array $data): void
-    {
-        $path = Storage::put("public/tasks/$task->id", $data['image']);
-
-        Image::create([
-            'imageable_id' => $task->id,
-            'imageable_type' => Task::class,
-            'path' => $path
-        ]);
-    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +28,6 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $path = User::where('name', '=', 'admin')->first()?->image?->path;
-        //dd(Storage::url($path));
+        dd(Task::class);
     }
 }

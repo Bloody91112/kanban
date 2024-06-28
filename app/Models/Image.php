@@ -12,13 +12,17 @@ class Image extends Model
     use HasFactory;
     protected $guarded = [];
 
+    public const ALIASES = [
+        Task::class => 'tasks',
+        User::class => 'users'
+    ];
+
+    protected $appends = ['url'];
+
     public function imageable(): MorphTo
     {
         return $this->morphTo();
     }
-
-    protected $appends = ['url'];
-
 
     public function getUrlAttribute(): string
     {

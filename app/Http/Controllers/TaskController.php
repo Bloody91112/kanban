@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Task\MoveRequest;
 use App\Http\Requests\Task\StoreRequest;
+use App\Http\Services\ImageService;
 use App\Http\Services\ProjectService;
 use App\Http\Services\TaskService;
+use App\Models\Image;
 use App\Models\Project;
 use App\Models\Task;
 use Illuminate\Http\JsonResponse;
@@ -34,6 +36,7 @@ class TaskController extends Controller
         $data = $request->validated();
         $task = $this->service->store($data);
         $project = ProjectService::load($task->column->project);
+
         return response()->json([
             'status' => true,
             'project' => $project,
@@ -53,15 +56,4 @@ class TaskController extends Controller
         ]);
     }
 
-    public function addFile(Task $task, Request $request): JsonResponse
-    {
-        $data = $request->validate(['image' => 'file']);
-        $this->service->addFile($task, $data);
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Файл успешно добавлен!',
-            'project' => $task->refresh()
-        ]);
-    }
 }
