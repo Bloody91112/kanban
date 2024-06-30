@@ -24,7 +24,7 @@ class UserFactory extends Factory
             'name' => 'seeder_' . fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => Hash::make('asd123asd'),
+            'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
